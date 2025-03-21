@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Botnet Simulation en Environnement Contrôlé
 ------------------------------------------------
@@ -15,7 +14,6 @@ import argparse
 import paramiko
 import sys
 
-# --- Fonction globale pour simuler une opération sur raw sockets ---
 def raw_socket_attack_simulation():
     """
     Simule l'envoi d'un paquet via un socket brut.
